@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Fajar Setiawan | Portfolio Dinamis & Human Touch</title>
+  <!-- Google Fonts + Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ---------- PRELOADER ANIMASI ---------- */
+    .preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0a0c10;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 24px;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    body.light .preloader {
+      background: #f8fafc;
+    }
+    .loader-text {
+      font-size: 1.5rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, #3b82f6, #a78bfa);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .loader-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(59,130,246,0.2);
+      border-top: 4px solid #3b82f6;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .dot-wave {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .dot-wave span {
+      width: 10px;
+      height: 10px;
+      background: #3b82f6;
+      border-radius: 50%;
+      animation: bounce 0.6s infinite alternate;
+    }
+    .dot-wave span:nth-child(2) { animation-delay: 0.2s; }
+    .dot-wave span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0% { transform: translateY(0); opacity: 0.4; }
+      100% { transform: translateY(-12px); opacity: 1; }
+    }
+
+    /* ---------- VARIABLES & GLOBAL ---------- */
+    :root {
+      --bg-primary: #0a0c10;
+      --bg-secondary: #111418;
+      --surface: #1a1f2a;
+      --surface-hover: #232834;
+      --text-primary: #f0f3fa;
+      --text-secondary: #a1abbd;
+      --accent: #3b82f6;
+      --accent-glow: #2563eb;
+      --border: #2a2f3c;
+      --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      --progress-bg: #2a2f3c;
+    }
+
+    body.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --surface: #f1f5f9;
+      --surface-hover: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --accent: #2563eb;
+      --border: #cbd5e1;
+      --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      --progress-bg: #e2e8f0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      scroll-behavior: smooth;
+      transition: background 0.3s, color 0.2s;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+    body.loaded {
+      opacity: 1;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* particle canvas */
+    #particle-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    section, .navbar, footer {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      flex-wrap: wrap;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+      background: rgba(var(--bg-primary-rgb), 0.6);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-weight: 500;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+    .dark-toggle {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      padding: 8px 16px;
+      cursor: pointer;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-weight: 500;
+      color: var(--text-primary);
+      transition: transform 0.2s;
+    }
+    .dark-toggle:hover { transform: scale(1.02); }
+
+    /* hero */
+    .hero {
+      padding: 80px 0 60px;
+      text-align: center;
+      animation: fadeUp 0.9s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, var(--accent));
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .typed-container {
+      font-size: 1.8rem;
+      margin-top: 20px;
+      min-height: 80px;
+    }
+    #typed-text {
+      color: var(--accent);
+      font-weight: 600;
+      border-right: 3px solid var(--accent);
+      padding-right: 4px;
+    }
+
+    /* sections */
+    section {
+      padding: 70px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 40px;
+      display: inline-block;
+      background: linear-gradient(120deg, var(--accent), #a78bfa);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    /* about */
+    .about-grid {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .avatar {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid var(--accent);
+      box-shadow: 0 0 20px rgba(59,130,246,0.3);
+      transition: transform 0.3s;
+    }
+    .avatar:hover { transform: scale(1.02); }
+
+    /* skills */
+    .skills-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      max-width: 700px;
+    }
+    .skill-item {
+      width: 100%;
+    }
+    .progress-bar-bg {
+      background: var(--progress-bg);
+      border-radius: 12px;
+      height: 12px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #8b5cf6);
+      border-radius: 12px;
+      transition: width 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    /* projects */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 32px;
+      align-items: center;
+    }
+    .filter-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 8px 18px;
+      border-radius: 40px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .filter-chip.active, .filter-chip:hover {
+      background: var(--accent);
+      color: white;
+      transform: translateY(-2px);
+    }
+    .search-input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 40px;
+      color: var(--text-primary);
+      width: 220px;
+    }
+    .repos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 28px;
+    }
+    .repo-card {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      box-shadow: var(--card-shadow);
+    }
+    .repo-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--accent);
+      box-shadow: 0 20px 30px -12px rgba(59,130,246,0.2);
+    }
+
+    /* contact */
+    .contact-icons {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    .contact-icon {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      padding: 12px 24px;
+      border-radius: 60px;
+      text-decoration: none;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      transition: all 0.25s;
+    }
+    .contact-icon:hover {
+      transform: scale(1.05);
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    .contact-icon:hover i { color: white; }
+
+    /* skeleton */
+    .skeleton-card {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 1.5rem;
+      animation: pulse 1.2s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+    }
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.5rem; }
+      .typed-container { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- PRELOADER -->
+  <div class="preloader" id="preloader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">Fajar Setiawan</div>
+    <div class="dot-wave">
+      <span></span><span></span><span></span>
+    </div>
+    <p style="color: #a1abbd; font-size: 0.8rem;">loading experience...</p>
+  </div>
+
+  <canvas id="particle-canvas"></canvas>
+
+  <div class="container">
+    <nav class="navbar">
+      <div class="logo">FJ<span style="color:var(--accent)">.</span>dev</div>
+      <div class="nav-links">
+        <a href="#home">Beranda</a>
+        <a href="#about">Tentang</a>
+        <a href="#skills">Skill</a>
+        <a href="#projects">Proyek</a>
+        <a href="#contact">Kontak</a>
+        <button class="dark-toggle" id="darkModeToggle">
+          <i class="fas fa-moon"></i> <span id="modeText">Dark</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <main>
+    <section id="home" style="padding-top: 30px;">
+      <div class="container hero">
+        <h1>Fajar Setiawan</h1>
+        <div class="typed-container">
+          <span>🚀 </span><span id="typed-text"></span>
+        </div>
+        <p style="margin-top: 20px; max-width: 600px; margin-left: auto; margin-right: auto; color: var(--text-secondary);">
+          Frontend & Backend Web Developer | Menciptakan solusi digital modern dan dinamis.
+        </p>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="container">
+        <h2 class="section-title">Tentang Saya</h2>
+        <div class="about-grid">
+          <img id="avatar-img" class="avatar" src="https://github.com/FJ25-by.png" alt="avatar" onerror="this.src='https://ui-avatars.com/api/?background=3b82f6&color=fff&name=Fajar'">
+          <div class="about-text">
+            <p id="bio-text">Memuat profil GitHub...</p>
+            <p style="margin-top: 16px;">
+              Saya pengembang fullstack dengan fokus pada JavaScript, Python, dan ekosistem web modern. 
+              Suka membangun aplikasi yang interaktif, cepat, dan mudah dirawat. Saat ini terus mengeksplorasi backend dan cloud.
+            </p>
+            <div style="margin-top: 20px; display: flex; gap: 12px;">
+              <span style="background: var(--surface); padding: 6px 12px; border-radius: 30px;"><i class="fab fa-js"></i> JS/TS</span>
+              <span style="background: var(--surface); padding: 6px 12px; border-radius: 30px;"><i class="fab fa-python"></i> Python</span>
+              <span style="background: var(--surface); padding: 6px 12px; border-radius: 30px;"><i class="fab fa-php"></i> PHP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills">
+      <div class="container">
+        <h2 class="section-title">Keahlian Teknis</h2>
+        <div class="skills-grid" id="skills-container"></div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="container">
+        <h2 class="section-title">Proyek GitHub</h2>
+        <div class="filter-bar">
+          <div id="language-filters" class="filter-bar" style="margin-bottom: 0;"></div>
+          <input type="text" id="search-repo" placeholder="Cari repo..." class="search-input" autocomplete="off">
+        </div>
+        <div id="repos-container" class="repos-grid"></div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container">
+        <h2 class="section-title">Hubungi Saya</h2>
+        <div class="contact-icons">
+          <a href="mailto:fajar.setiawan@example.com" class="contact-icon"><i class="fas fa-envelope"></i> <span>fajar@dev.id</span></a>
+          <a href="https://github.com/FJ25-by" target="_blank" class="contact-icon"><i class="fab fa-github"></i> <span>GitHub</span></a>
+          <a href="#" class="contact-icon"><i class="fab fa-linkedin"></i> <span>LinkedIn</span></a>
+        </div>
+        <p style="margin-top: 32px; color: var(--text-secondary);">Tersedia untuk kolaborasi & proyek menarik ✨</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Fajar Setiawan | Portfolio dinamis dengan hati ✨</p>
+  </footer>
+
+  <script>
+    (function() {
+      // ---------- PRELOADER HIDE + BODY FADE IN ----------
+      const preloader = document.getElementById('preloader');
+      const body = document.body;
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          if (preloader) {
+            preloader.style.opacity = '0';
+            preloader.style.visibility = 'hidden';
+            body.classList.add('loaded');
+          }
+        }, 800); // biar efek loading terasa alami
+      });
+
+      // ---------- PARTICLE BACKGROUND (manusiawi, lembut) ----------
+      const canvas = document.getElementById('particle-canvas');
+      let ctx = canvas.getContext('2d');
+      let particles = [];
+      let animationId;
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      function initParticles() {
+        particles = [];
+        let num = Math.min(70, Math.floor(window.innerWidth / 20));
+        for (let i = 0; i < num; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 2 + 1.2,
+            alpha: Math.random() * 0.5 + 0.2,
+            speedX: (Math.random() - 0.5) * 0.3,
+            speedY: (Math.random() - 0.5) * 0.2,
+          });
+        }
+      }
+      function drawParticles() {
+        if (!ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = document.body.classList.contains('light') ? 'rgba(59,130,246,0.25)' : 'rgba(59,130,246,0.35)';
+        for (let p of particles) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(59, 130, 246, ${p.alpha * 0.5})`;
+          ctx.fill();
+          p.x += p.speedX;
+          p.y += p.speedY;
+          if (p.x < 0) p.x = canvas.width;
+          if (p.x > canvas.width) p.x = 0;
+          if (p.y < 0) p.y = canvas.height;
+          if (p.y > canvas.height) p.y = 0;
+        }
+        animationId = requestAnimationFrame(drawParticles);
+      }
+      window.addEventListener('resize', () => {
+        resizeCanvas();
+        initParticles();
+      });
+      resizeCanvas();
+      initParticles();
+      drawParticles();
+
+      // ---------- TYPING EFFECT ----------
+      const roles = ["Frontend Developer", "Backend Developer", "Fullstack Enthusiast", "API Designer"];
+      let roleIndex = 0, charIndex = 0, isDeleting = false;
+      const typedElement = document.getElementById("typed-text");
+      function typeEffect() {
+        const current = roles[roleIndex];
+        if (isDeleting) {
+          typedElement.textContent = current.substring(0, charIndex - 1);
+          charIndex--;
+        } else {
+          typedElement.textContent = current.substring(0, charIndex + 1);
+          charIndex++;
+        }
+        if (!isDeleting && charIndex === current.length) {
+          isDeleting = true;
+          setTimeout(typeEffect, 2000);
+          return;
+        }
+        if (isDeleting && charIndex === 0) {
+          isDeleting = false;
+          roleIndex = (roleIndex + 1) % roles.length;
+          setTimeout(typeEffect, 300);
+          return;
+        }
+        setTimeout(typeEffect, isDeleting ? 50 : 100);
+      }
+      typeEffect();
+
+      // ---------- SKILLS DATA + OBSERVER ANIMASI ----------
+      const skillsData = [
+        { name: "JavaScript", level: 70, icon: "js" },
+        { name: "Python", level: 50, icon: "python" },
+        { name: "Lua", level: 40, icon: "code" },
+        { name: "PHP", level: 30, icon: "php" }
+      ];
+      const skillsContainer = document.getElementById("skills-container");
+      function renderSkills() {
+        skillsContainer.innerHTML = "";
+        skillsData.forEach(skill => {
+          const div = document.createElement("div");
+          div.classList.add("skill-item");
+          div.innerHTML = `
+            <div class="skill-header">
+              <span><i class="fab fa-${skill.icon === 'js' ? 'js' : skill.icon}"></i> ${skill.name}</span>
+              <span>${skill.level}%</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-fill" data-skill-level="${skill.level}" style="width: 0%;"></div>
+            </div>
+          `;
+          skillsContainer.appendChild(div);
+        });
+        initSkillObserver();
+      }
+      function initSkillObserver() {
+        const fills = document.querySelectorAll(".progress-fill");
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const bar = entry.target;
+              const target = bar.getAttribute("data-skill-level");
+              if (target && bar.style.width !== `${target}%`) {
+                bar.style.width = `${target}%`;
+              }
+              observer.unobserve(bar);
+            }
+          });
+        }, { threshold: 0.4 });
+        fills.forEach(f => observer.observe(f));
+      }
+      renderSkills();
+
+      // ---------- GITHUB API INTEGRATION ----------
+      let allRepos = [];
+      let currentLangFilter = "All";
+      let searchQuery = "";
+      let uniqueLanguages = new Set();
+      const reposContainer = document.getElementById("repos-container");
+      const languageFiltersDiv = document.getElementById("language-filters");
+      const searchInput = document.getElementById("search-repo");
+
+      async function fetchGitHubData() {
+        const username = "FJ25-by";
+        try {
+          const userRes = await fetch(`https://api.github.com/users/${username}`);
+          if (userRes.ok) {
+            const user = await userRes.json();
+            const avatar = document.getElementById("avatar-img");
+            if (avatar) avatar.src = user.avatar_url;
+            const bioP = document.getElementById("bio-text");
+            if (user.bio) bioP.innerText = user.bio;
+            else bioP.innerText = "Pengembang web yang suka bereksperimen dengan teknologi baru. Bangun solusi berdampak!";
+          }
+        } catch(e) { console.warn(e); }
+        try {
+          showLoadingSkeleton(true);
+          const repoRes = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`);
+          if (!repoRes.ok) throw new Error();
+          const repos = await repoRes.json();
+          allRepos = repos.map(r => ({
+            id: r.id,
+            name: r.name,
+            description: r.description || "Tidak ada deskripsi",
+            language: r.language || "Unknown",
+            stars: r.stargazers_count,
+            url: r.html_url
+          }));
+          uniqueLanguages.clear();
+          uniqueLanguages.add("All");
+          allRepos.forEach(r => { if(r.language !== "Unknown") uniqueLanguages.add(r.language); });
+          renderLanguageFilters();
+          applyFiltersAndRender();
+        } catch(err) {
+          reposContainer.innerHTML = `<div class="error-message" style="grid-column:1/-1; padding:2rem;"><i class="fas fa-exclamation-triangle"></i> Gagal memuat repo. Coba refresh nanti.</div>`;
+        } finally {
+          showLoadingSkeleton(false);
+        }
+      }
+      function showLoadingSkeleton(show) {
+        if (show) {
+          reposContainer.innerHTML = Array(3).fill().map(() => `<div class="skeleton-card"><div class="skeleton-title" style="

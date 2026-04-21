@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Fajar Setiawan | Portfolio Dinamis & Human Touch</title>
+  <title>Fajar Setiawan</title>
   <!-- Google Fonts + Font Awesome -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -14,7 +14,7 @@
       box-sizing: border-box;
     }
 
-    /* ---------- PRELOADER ANIMASI ---------- */
+    /* ---------- PRELOADER ANIMASI (DIPERBAIKI) ---------- */
     .preloader {
       position: fixed;
       top: 0;
@@ -22,16 +22,22 @@
       width: 100%;
       height: 100%;
       background: #0a0c10;
-      z-index: 9999;
+      z-index: 10000;
       display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: column;
       gap: 24px;
-      transition: opacity 0.6s ease, visibility 0.6s ease;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+      opacity: 1;
+      visibility: visible;
     }
     body.light .preloader {
       background: #f8fafc;
+    }
+    .preloader.hide-preloader {
+      opacity: 0;
+      visibility: hidden;
     }
     .loader-text {
       font-size: 1.5rem;
@@ -108,11 +114,7 @@
       line-height: 1.5;
       scroll-behavior: smooth;
       transition: background 0.3s, color 0.2s;
-      opacity: 0;
-      transition: opacity 0.8s ease;
-    }
-    body.loaded {
-      opacity: 1;
+      /* Hapus opacity awal, biar konten langsung terlihat setelah preloader hilang */
     }
 
     .container {
@@ -378,14 +380,14 @@
   </style>
 </head>
 <body>
-  <!-- PRELOADER -->
+  <!-- PRELOADER (fix blank hitam) -->
   <div class="preloader" id="preloader">
     <div class="loader-spinner"></div>
-    <div class="loader-text">Fajar Setiawan</div>
+    <div class="loader-text">Loading</div>
     <div class="dot-wave">
       <span></span><span></span><span></span>
     </div>
-    <p style="color: #a1abbd; font-size: 0.8rem;">loading experience...</p>
+    <p style="color: #a1abbd; font-size: 0.8rem;">Memuat Portfolio...</p>
   </div>
 
   <canvas id="particle-canvas"></canvas>
@@ -462,7 +464,7 @@
       <div class="container">
         <h2 class="section-title">Hubungi Saya</h2>
         <div class="contact-icons">
-          <a href="mailto:fajar.setiawan@example.com" class="contact-icon"><i class="fas fa-envelope"></i> <span>fajar@dev.id</span></a>
+          <a href="mailto:fajar2523gg@gmail.com" class="contact-icon"><i class="fas fa-envelope"></i> <span>fajar2523gg@gmail.com</span></a>
           <a href="https://github.com/FJ25-by" target="_blank" class="contact-icon"><i class="fab fa-github"></i> <span>GitHub</span></a>
           <a href="#" class="contact-icon"><i class="fab fa-linkedin"></i> <span>LinkedIn</span></a>
         </div>
@@ -472,25 +474,35 @@
   </main>
 
   <footer>
-    <p>© 2025 Fajar Setiawan | Portfolio dinamis dengan hati ✨</p>
+    <p>© 2026 Fajar Setiawan </p>
   </footer>
 
   <script>
     (function() {
-      // ---------- PRELOADER HIDE + BODY FADE IN ----------
+      // ---------- PRELOADER DIPERBAIKI: hilangkan dengan andal ----------
       const preloader = document.getElementById('preloader');
-      const body = document.body;
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          if (preloader) {
-            preloader.style.opacity = '0';
-            preloader.style.visibility = 'hidden';
-            body.classList.add('loaded');
-          }
-        }, 800); // biar efek loading terasa alami
-      });
+      function hidePreloader() {
+        if (preloader) {
+          preloader.classList.add('hide-preloader');
+          // Hapus dari DOM setelah transisi selesai agar tidak mengganggu klik
+          setTimeout(() => {
+            if (preloader && preloader.parentNode) preloader.style.display = 'none';
+          }, 600);
+        }
+      }
+      // Pastikan preloader hilang setelah semua konten + simulasi sedikit delay agar terasa natural
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          // Tunggu sebentar biar loading terasa, lalu hilangkan
+          setTimeout(hidePreloader, 800);
+        });
+      } else {
+        setTimeout(hidePreloader, 800);
+      }
+      // Fallback: jika terjadi error, preloader tetap hilang maks 3 detik
+      setTimeout(hidePreloader, 3000);
 
-      // ---------- PARTICLE BACKGROUND (manusiawi, lembut) ----------
+      // ---------- PARTICLE BACKGROUND (manusiawi) ----------
       const canvas = document.getElementById('particle-canvas');
       let ctx = canvas.getContext('2d');
       let particles = [];
@@ -516,11 +528,10 @@
       function drawParticles() {
         if (!ctx) return;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = document.body.classList.contains('light') ? 'rgba(59,130,246,0.25)' : 'rgba(59,130,246,0.35)';
         for (let p of particles) {
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(59, 130, 246, ${p.alpha * 0.5})`;
+          ctx.fillStyle = document.body.classList.contains('light') ? 'rgba(59,130,246,0.25)' : 'rgba(59,130,246,0.35)';
           ctx.fill();
           p.x += p.speedX;
           p.y += p.speedY;
@@ -659,4 +670,90 @@
       }
       function showLoadingSkeleton(show) {
         if (show) {
-          reposContainer.innerHTML = Array(3).fill().map(() => `<div class="skeleton-card"><div class="skeleton-title" style="
+          reposContainer.innerHTML = Array(3).fill().map(() => `<div class="skeleton-card"><div style="height:24px; background:var(--progress-bg); margin-bottom:12px; border-radius:8px;"></div><div style="height:40px; background:var(--progress-bg); border-radius:8px;"></div></div>`).join('');
+        }
+      }
+      function renderLanguageFilters() {
+        languageFiltersDiv.innerHTML = "";
+        const sorted = Array.from(uniqueLanguages).sort();
+        sorted.forEach(lang => {
+          const chip = document.createElement("div");
+          chip.classList.add("filter-chip");
+          if (lang === currentLangFilter) chip.classList.add("active");
+          chip.textContent = lang;
+          chip.addEventListener("click", () => {
+            currentLangFilter = lang;
+            renderLanguageFilters();
+            applyFiltersAndRender();
+          });
+          languageFiltersDiv.appendChild(chip);
+        });
+      }
+      function applyFiltersAndRender() {
+        let filtered = [...allRepos];
+        if (currentLangFilter !== "All") filtered = filtered.filter(r => r.language === currentLangFilter);
+        if (searchQuery.trim() !== "") {
+          const q = searchQuery.toLowerCase();
+          filtered = filtered.filter(r => r.name.toLowerCase().includes(q));
+        }
+        renderRepoCards(filtered);
+      }
+      function renderRepoCards(repos) {
+        if (!repos.length) {
+          reposContainer.innerHTML = `<div class="error-message" style="grid-column:1/-1;">✨ Tidak ada repo dengan filter ini.</div>`;
+          return;
+        }
+        reposContainer.innerHTML = repos.map(repo => `
+          <div class="repo-card">
+            <h3><i class="fab fa-github-alt"></i> ${repo.name}</h3>
+            <p>${repo.description.length > 100 ? repo.description.slice(0,100)+'...' : repo.description}</p>
+            <div class="repo-meta" style="display:flex; gap:12px; margin:10px 0;">
+              <span><i class="fas fa-code"></i> ${repo.language}</span>
+              <span><i class="fas fa-star"></i> ${repo.stars}</span>
+            </div>
+            <a href="${repo.url}" target="_blank" class="repo-link" style="color:var(--accent);">Lihat Repo →</a>
+          </div>
+        `).join('');
+      }
+      if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+          searchQuery = e.target.value;
+          applyFiltersAndRender();
+        });
+      }
+      fetchGitHubData();
+
+      // ---------- DARK MODE ----------
+      const darkToggle = document.getElementById("darkModeToggle");
+      const modeSpan = document.getElementById("modeText");
+      function setTheme(theme) {
+        if (theme === "light") {
+          document.body.classList.add("light");
+          localStorage.setItem("theme", "light");
+          if(modeSpan) modeSpan.innerText = "Light";
+        } else {
+          document.body.classList.remove("light");
+          localStorage.setItem("theme", "dark");
+          if(modeSpan) modeSpan.innerText = "Dark";
+        }
+      }
+      darkToggle.addEventListener("click", () => {
+        const isLight = document.body.classList.contains("light");
+        setTheme(isLight ? "dark" : "light");
+      });
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") setTheme("light");
+      else setTheme("dark");
+
+      // smooth scroll
+      document.querySelectorAll('.nav-links a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if(target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
